@@ -6,7 +6,7 @@ import cv2
 
 class VOCDataset:
 
-    def __init__(self, root, transform=None, target_transform=None, is_test=False, keep_difficult=False):
+    def __init__(self, root, transform=None, target_transform=None, is_test=False, keep_difficult=True):# keep_difficult=False
         """Dataset for VOC data.
         Args:
             root: the root of the VOC2007 or VOC2012 dataset, the directory contains the following sub-directories:
