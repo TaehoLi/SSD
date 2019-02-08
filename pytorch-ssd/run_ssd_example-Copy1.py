@@ -7,6 +7,8 @@ from vision.utils.misc import Timer
 import cv2
 import sys
 
+import xml.etree.ElementTree as ET
+import os
 
 if len(sys.argv) < 5:
     print('Usage: python run_ssd_example.py <net type>  <model path> <image path>')
@@ -50,17 +52,48 @@ orig_image = cv2.imread(image_path)
 image = cv2.cvtColor(orig_image, cv2.COLOR_BGR2RGB)
 boxes, labels, probs = predictor.predict(image, 10, 0.4)
 
+
 for i in range(boxes.size(0)):
     box = boxes[i, :]
-    cv2.rectangle(orig_image, (box[0], box[1]), (box[2], box[3]), (255, 255, 0), 4)
+    cv2.rectangle(orig_image, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 4)
     #label = f"""{voc_dataset.class_names[labels[i]]}: {probs[i]:.2f}"""
     label = f"{class_names[labels[i]]}: {probs[i]:.2f}"
     cv2.putText(orig_image, label,
                 (box[0] + 20, box[1] + 40),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.55,  # font scale
-                (255, 0, 255),
+                (200, 0, 0),
                 2)  # line type
+###
+xml_path = "/home/taeho/다운로드/NEU-DET/ANNOTATIONS/"
+xmin = []
+ymin = []
+xmax = []
+ymax = []
+
+a = image_path.split('/')
+b = a[1].split('.')
+xml = b[0] + ".xml"
+
+tree = ET.parse(xml_path + xml)
+root = tree.getroot()
+
+for child in root.iter():
+    tag = child.tag
+    if tag == "xmin":
+        xmin.append(int(child.text))
+    if tag == "ymin":
+        ymin.append(int(child.text))
+    if tag == "xmax":
+        xmax.append(int(child.text))
+    if tag == "ymax":
+        ymax.append(int(child.text))
+        
+for i, num in enumerate(xmin):
+    cv2.rectangle(orig_image, (xmin[i], ymin[i]), (xmax[i], ymax[i]), (0, 255, 0), 4)
+    
+###
 path = "run_ssd_example_output.jpg"
 cv2.imwrite(path, orig_image)
 print(f"Found {len(probs)} objects. The output image is {path}")
+
