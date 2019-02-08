@@ -22,7 +22,7 @@ class VOCDataset:
         self.ids = VOCDataset._read_image_ids(image_sets_file)
         self.keep_difficult = keep_difficult
 
-        self.class_names = ('crazing',
+        self.class_names = ('BACKGROUND', 'crazing',
             'inclusion', 'patches', 'pitted_surface',
             'rolled-in_scale', 'scratches'
         )
