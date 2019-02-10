@@ -5,9 +5,10 @@ import json
 from collections import OrderedDict
 from pprint import pprint
 
+
 class COCODataset:
 
-    def __init__(self, root, transform=None, target_transform=None, is_test=False, keep_difficult=True):
+    def __init__(self, root, transform=None, target_transform=None, is_test=False, keep_difficult=False):
         """
         Dataset for COCO data.
         Args:
@@ -93,6 +94,10 @@ class COCODataset:
         is_difficult = []
         image_number = int(image_id[-6:])
         
+        for index, name in enumerate(data["images"]):
+            if name["id"] == image_number:
+                image_height = name["height"]
+                image_width = name["width"]
 
         for index, name in enumerate(data["annotations"]):
             category_id = name["category_id"]
@@ -104,33 +109,50 @@ class COCODataset:
                     if name["id"] == category_id:
                         #print(name["name"])
                         #print(bbox)
-                        xmin = float(round(bbox[0])) - 1
-                        ymin = float(round(bbox[1])) - 1
-                        xmax = float(round(bbox[0] + bbox[2])) - 1
-                        ymax = float(round(bbox[1] + bbox[3])) - 1
-                        bbox = [xmin, ymin, xmax, ymax]
+                        
+                        xmin = round(bbox[0])
+                        if xmin == 0:
+                            xmin += 1
+                        ymin = round(bbox[1])
+                        if ymin == 0:
+                            ymin += 1
+                        xmax = round(bbox[0] + bbox[2])
+                        if xmax == image_width:
+                            xmax -= 1
+                        ymax = round(bbox[1] + bbox[3])
+                        if ymax == image_height:
+                            ymax -= 1
 
+                        bbox = [xmin, ymin, xmax, ymax]
                         boxes.append(bbox)
+                        
+                        #xmin = bbox[0]
+                        #ymin = bbox[1]
+                        #xmax = bbox[0] + bbox[2]
+                        #ymax = bbox[1] + bbox[3]
+                        #bbox = [xmin, ymin, xmax, ymax]
+                        #boxes.append(bbox)
+                        
                         is_difficult.append(0)
 
                         if category_id <= 11:
-                            labels.append(category_id+1)
+                            labels.append(category_id)
                         elif category_id <= 25:
-                            labels.append(category_id-1+1)
+                            labels.append(category_id-1)
                         elif category_id <= 28:
-                            labels.append(category_id-2+1)
+                            labels.append(category_id-2)
                         elif category_id <= 44:
-                            labels.append(category_id-4+1)
+                            labels.append(category_id-4)
                         elif category_id <= 65:
-                            labels.append(category_id-5+1)
+                            labels.append(category_id-5)
                         elif category_id == 67:
-                            labels.append(61+1)
+                            labels.append(61)
                         elif category_id <= 70:
-                            labels.append(62+1)
+                            labels.append(62)
                         elif category_id <= 82:
-                            labels.append(category_id-9+1)
+                            labels.append(category_id-9)
                         else:
-                            labels.append(category_id-10+1)
+                            labels.append(category_id-10)
 
 
         return (np.array(boxes, dtype=np.float32),
@@ -142,6 +164,4 @@ class COCODataset:
         image = cv2.imread(str(image_file))
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         return image
-
-
 
