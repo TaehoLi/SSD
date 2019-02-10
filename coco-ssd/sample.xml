@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<girlgroup>
+  <name alias="GFRIEND">여자친구</name>
+  <members>
+    <member>소원</member>
+    <member>예린</member>
+    <member>은하</member>
+    <member>유주</member>
+    <member>신비</member>
+    <member>엄지</member>
+  </members>
+  <albums>
+    <album order="EP 1집">Season of Glass</album>
+    <album order="EP 2집">Flower Bud</album>
+    <album order="EP 3집">Snowflake</album>
+    <album order="정규 1집">LOL</album>
+  </albums>
+</girlgroup>
