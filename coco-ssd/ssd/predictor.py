@@ -2,7 +2,7 @@ import torch
 
 from utils import box_utils
 from ssd.data_preprocessing import PredictionTransform
-from utils.misc import Timer
+#from utils.misc import Timer
 
 
 class Predictor:
@@ -24,7 +24,7 @@ class Predictor:
         self.net.to(self.device)
         self.net.eval()
 
-        self.timer = Timer()
+        #self.timer = Timer()
 
     def predict(self, image, top_k=-1, prob_threshold=None):
         cpu_device = torch.device("cpu")
@@ -33,9 +33,9 @@ class Predictor:
         images = image.unsqueeze(0)
         images = images.to(self.device)
         with torch.no_grad():
-            self.timer.start()
+            #self.timer.start()
             scores, boxes = self.net.forward(images)
-            print("Inference time: ", self.timer.end())
+            #print("Inference time: ", self.timer.end())
         boxes = boxes[0]
         scores = scores[0]
         if not prob_threshold:
