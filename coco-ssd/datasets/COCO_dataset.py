@@ -8,7 +8,7 @@ from pprint import pprint
 
 class COCODataset:
 
-    def __init__(self, root, transform=None, target_transform=None, is_test=False, keep_difficult=False):
+    def __init__(self, root, transform=None, target_transform=None, is_test=False, is_validate=False, keep_difficult=False):
         """
         Dataset for COCO data.
         Args:
@@ -22,7 +22,10 @@ class COCODataset:
         if is_test:
             image_sets_file = self.root / "images/test.txt"
         else:
-            image_sets_file = self.root / "images/train.txt"
+            if is_validate:
+                image_sets_file = self.root / "images/val.txt"
+            else:
+                image_sets_file = self.root / "images/train.txt"
             
         self.ids = COCODataset._read_image_ids(image_sets_file)
         self.keep_difficult = keep_difficult
