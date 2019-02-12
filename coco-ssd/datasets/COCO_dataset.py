@@ -22,7 +22,7 @@ class COCODataset:
         if is_test:
             image_sets_file = self.root / "images/test.txt"
         else:
-            image_sets_file = self.root / "images/trainval.txt"
+            image_sets_file = self.root / "images/train.txt"
             
         self.ids = COCODataset._read_image_ids(image_sets_file)
         self.keep_difficult = keep_difficult
@@ -134,30 +134,19 @@ class COCODataset:
                         #boxes.append(bbox)
                         
                         is_difficult.append(0)
+                        labels.append(self.class_dict[name["name"]])
 
-                        if category_id <= 11:
-                            labels.append(category_id)
-                        elif category_id <= 25:
-                            labels.append(category_id-1)
-                        elif category_id <= 28:
-                            labels.append(category_id-2)
-                        elif category_id <= 44:
-                            labels.append(category_id-4)
-                        elif category_id <= 65:
-                            labels.append(category_id-5)
-                        elif category_id == 67:
-                            labels.append(61)
-                        elif category_id <= 70:
-                            labels.append(62)
-                        elif category_id <= 82:
-                            labels.append(category_id-9)
-                        else:
-                            labels.append(category_id-10)
-
-
-        return (np.array(boxes, dtype=np.float32),
-                np.array(labels, dtype=np.int64),
-                np.array(is_difficult, dtype=np.uint8))
+        a = np.array(boxes, dtype=np.float32)
+        b = np.array(labels, dtype=np.int64)
+        c = np.array(is_difficult, dtype=np.uint8)
+        if a.size==0 or b.size==0 or c.size==0:
+            a = np.array([[0,0,0,0]], dtype=np.float32)
+            b = np.array([0], dtype=np.int64)
+            c = np.array([0], dtype=np.uint8)
+            return (a,b,c)
+        else:
+            pass
+        return (a,b,c)
 
     def _read_image(self, image_id):
         image_file = self.root / f"images/val2014/{image_id}.jpg"
