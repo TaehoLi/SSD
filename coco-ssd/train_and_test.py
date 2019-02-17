@@ -1,6 +1,9 @@
 import torch
+import os
 
-def train(loader, net, criterion, optimizer, device, debug_steps=100, epoch=-1):
+num_training_loss = 0 #global variable
+
+def train(loader, net, criterion, optimizer, device, checkpoint_folder, debug_steps=100, epoch=-1):
     global num_training_loss
 
     net.train(True)
