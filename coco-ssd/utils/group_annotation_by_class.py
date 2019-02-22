@@ -30,6 +30,6 @@ def group_annotation_by_class(dataset):
             all_gt_boxes[class_index][image_id] = torch.stack(all_gt_boxes[class_index][image_id])
     for class_index in all_difficult_cases:
         for image_id in all_difficult_cases[class_index]:
-            all_gt_boxes[class_index][image_id] = torch.tensor(all_gt_boxes[class_index][image_id])
+            all_gt_boxes[class_index][image_id] = all_gt_boxes[class_index][image_id].clone().detach()
     return true_case_stat, all_gt_boxes, all_difficult_cases
 
