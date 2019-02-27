@@ -34,6 +34,7 @@ def train(loader, net, criterion, optimizer, device, checkpoint_folder, debug_st
             name = "vgg16-ssd" + "-Train-" + "%d"%num_training_loss + "-running_Loss-" + "%s"%str(running_loss)[:7] + ".pth"
             model_path = os.path.join(checkpoint_folder, name)
             #net.save(model_path)
+            #torch.save(net.state_dict(), model_path)
             #print("Saved model:", model_path, "\n")
             
             running_loss = 0.0
