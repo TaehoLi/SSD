@@ -38,15 +38,14 @@ class SSD(nn.Module):
                                                    if isinstance(t, tuple) and not isinstance(t, GraphPath)])
         
         if device:
-            self.device1 = device
-            self.device2 = torch.device("cuda:1")
+            self.device = device
+            self.device0 = torch.device("cuda:%d" %device[0])
         else:
-            self.device1 = torch.device("cpu")
-            self.device2 = torch.device("cpu")
+            self.device0 = torch.device("cpu")
             
         if is_test:
             self.config = config
-            self.priors = config.priors.to(self.device1)
+            self.priors = config.priors.to(self.device0)
             
     def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         confidences = []
@@ -68,7 +67,10 @@ class SSD(nn.Module):
             for layer in self.base_net[start_layer_index: end_layer_index]:
                 x = layer(x)
             if added_layer:
-                y = added_layer(x.to(self.device1))
+                try:
+                    y = added_layer(x)
+                except RuntimeError:
+                    y = added_layer(x.to(torch.device("cuda:%d" %self.device[0])))
             else:
                 y = x
             if path:
@@ -86,15 +88,9 @@ class SSD(nn.Module):
             locations.append(location)
 
         for layer in self.base_net[end_layer_index:]:
-            try:
-                x = layer(x.to(self.device1))
-            except RuntimeError:
-                x = layer(x.to(self.device2))
+            x = layer(x)
         for layer in self.extras:
-            try:
-                x = layer(x.to(self.device1))
-            except RuntimeError:
-                x = layer(x.to(self.device2))
+            x = layer(x)
             confidence, location = self.compute_header(header_index, x)
             header_index += 1
             confidences.append(confidence)
@@ -125,11 +121,11 @@ class SSD(nn.Module):
             location = location.permute(0, 2, 3, 1).contiguous()
             location = location.view(location.size(0), -1, 4)
         except RuntimeError:
-            confidence = self.classification_headers[i](x.to(self.device2))
+            confidence = self.classification_headers[i](x.to(torch.device("cuda:%d" %self.device[1])))
             confidence = confidence.permute(0, 2, 3, 1).contiguous()
             confidence = confidence.view(confidence.size(0), -1, self.num_classes)
 
-            location = self.regression_headers[i](x.to(self.device2))
+            location = self.regression_headers[i](x.to(torch.device("cuda:%d" %self.device[1])))
             location = location.permute(0, 2, 3, 1).contiguous()
             location = location.view(location.size(0), -1, 4)
 
