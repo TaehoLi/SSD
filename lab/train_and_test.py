@@ -1,7 +1,11 @@
 import torch
 import os
+os.chdir("utils")
+from misc import Timer
+os.chdir("..")
 
 num_training_loss = 0 #global variable
+timer = Timer()
 
 def train(loader, net, criterion, optimizer, device, checkpoint_folder, debug_steps=100, epoch=-1):
     global num_training_loss
@@ -12,6 +16,7 @@ def train(loader, net, criterion, optimizer, device, checkpoint_folder, debug_st
     running_classification_loss = 0.0
     
     for i, data in enumerate(loader):
+        #timer.start()
         images, boxes, labels = data
         images = images.to(device)
         boxes = boxes.to(device)
@@ -28,6 +33,7 @@ def train(loader, net, criterion, optimizer, device, checkpoint_folder, debug_st
         running_loss += loss.item()
         running_regression_loss += regression_loss.item()
         running_classification_loss += classification_loss.item()
+        #print("Time cost: ", timer.end())
         
         if i and i % (debug_steps-1) == 0:
             num_training_loss += 1
