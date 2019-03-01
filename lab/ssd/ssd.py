@@ -11,7 +11,7 @@ import sys
 os.chdir("utils")
 import box_utils
 os.chdir("..")
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 GraphPath = namedtuple("GraphPath", ['s0', 'name', 's1'])  #
 
 
@@ -156,7 +156,18 @@ class SSD(nn.Module):
 
     def load(self, model):
         self.load_state_dict(torch.load(model, map_location=lambda storage, loc: storage))
-
+    
+    def load_dataparallel_model(self, model):
+        # original saved file with DataParallel
+        state_dict = torch.load(model, map_location=lambda storage, loc: storage)
+        # create new OrderedDict that does not contain `module.`
+        new_state_dict = OrderedDict()
+        for k, v in state_dict.items():
+            name = k[7:] # remove `module.`
+            new_state_dict[name] = v
+        # load params
+        self.load_state_dict(new_state_dict)
+    
     def save(self, model_path):
         torch.save(self.state_dict(), model_path)
 
