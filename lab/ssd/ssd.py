@@ -38,8 +38,10 @@ class SSD(nn.Module):
                                                    if isinstance(t, tuple) and not isinstance(t, GraphPath)])
         
         if device:
-            self.device = device
-            self.device0 = torch.device("cuda:%d" %device[0])
+            self.device0 = device
+            self.device1 = torch.device("cuda:1")
+            self.device2 = torch.device("cuda:2")
+            self.device3 = torch.device("cuda:3")
         else:
             self.device0 = torch.device("cpu")
             
@@ -68,9 +70,15 @@ class SSD(nn.Module):
                 x = layer(x)
             if added_layer:
                 try:
-                    y = added_layer(x)
+                    y = added_layer(x.to(self.device0))
                 except RuntimeError:
-                    y = added_layer(x.to(torch.device("cuda:%d" %self.device[0])))
+                    try:
+                        y = added_layer(x.to(self.device1))
+                    except RuntimeError:
+                        try:
+                            y = added_layer(x.to(self.device2))
+                        except RuntimeError:
+                            y = added_layer(x.to(self.device3))
             else:
                 y = x
             if path:
@@ -113,40 +121,40 @@ class SSD(nn.Module):
     def compute_header(self, i, x):
         #print(i)
         try:
-            confidence = self.classification_headers[i](x)
+            confidence = self.classification_headers[i](x.to(self.device0))
             confidence = confidence.permute(0, 2, 3, 1).contiguous()
             confidence = confidence.view(confidence.size(0), -1, self.num_classes)
 
-            location = self.regression_headers[i](x)
+            location = self.regression_headers[i](x.to(self.device0))
             location = location.permute(0, 2, 3, 1).contiguous()
             location = location.view(location.size(0), -1, 4)
         except RuntimeError:
             try:
-                confidence = self.classification_headers[i](x.to(torch.device("cuda:%d" %self.device[1])))
+                confidence = self.classification_headers[i](x.to(self.device1))
                 confidence = confidence.permute(0, 2, 3, 1).contiguous()
                 confidence = confidence.view(confidence.size(0), -1, self.num_classes)
 
-                location = self.regression_headers[i](x.to(torch.device("cuda:%d" %self.device[1])))
+                location = self.regression_headers[i](x.to(self.device1))
                 location = location.permute(0, 2, 3, 1).contiguous()
                 location = location.view(location.size(0), -1, 4)
             except RuntimeError:
                 try:
-                    confidence = self.classification_headers[i](x.to(torch.device("cuda:%d" %self.device[2])))
+                    confidence = self.classification_headers[i](x.to(self.device2))
                     confidence = confidence.permute(0, 2, 3, 1).contiguous()
                     confidence = confidence.view(confidence.size(0), -1, self.num_classes)
 
-                    location = self.regression_headers[i](x.to(torch.device("cuda:%d" %self.device[2])))
+                    location = self.regression_headers[i](x.to(self.device2))
                     location = location.permute(0, 2, 3, 1).contiguous()
                     location = location.view(location.size(0), -1, 4)
                 except RuntimeError:
-                    confidence = self.classification_headers[i](x.to(torch.device("cuda:%d" %self.device[3])))
+                    confidence = self.classification_headers[i](x.to(self.device3))
                     confidence = confidence.permute(0, 2, 3, 1).contiguous()
                     confidence = confidence.view(confidence.size(0), -1, self.num_classes)
 
-                    location = self.regression_headers[i](x.to(torch.device("cuda:%d" %self.device[3])))
+                    location = self.regression_headers[i](x.to(self.device3))
                     location = location.permute(0, 2, 3, 1).contiguous()
                     location = location.view(location.size(0), -1, 4)
-
+        
         return confidence, location
 
     def init_from_base_net(self, model):
