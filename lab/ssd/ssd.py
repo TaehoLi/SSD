@@ -121,13 +121,31 @@ class SSD(nn.Module):
             location = location.permute(0, 2, 3, 1).contiguous()
             location = location.view(location.size(0), -1, 4)
         except RuntimeError:
-            confidence = self.classification_headers[i](x.to(torch.device("cuda:%d" %self.device[1])))
-            confidence = confidence.permute(0, 2, 3, 1).contiguous()
-            confidence = confidence.view(confidence.size(0), -1, self.num_classes)
+            try:
+                confidence = self.classification_headers[i](x.to(torch.device("cuda:%d" %self.device[1])))
+                confidence = confidence.permute(0, 2, 3, 1).contiguous()
+                confidence = confidence.view(confidence.size(0), -1, self.num_classes)
 
-            location = self.regression_headers[i](x.to(torch.device("cuda:%d" %self.device[1])))
-            location = location.permute(0, 2, 3, 1).contiguous()
-            location = location.view(location.size(0), -1, 4)
+                location = self.regression_headers[i](x.to(torch.device("cuda:%d" %self.device[1])))
+                location = location.permute(0, 2, 3, 1).contiguous()
+                location = location.view(location.size(0), -1, 4)
+            except RuntimeError:
+                try:
+                    confidence = self.classification_headers[i](x.to(torch.device("cuda:%d" %self.device[2])))
+                    confidence = confidence.permute(0, 2, 3, 1).contiguous()
+                    confidence = confidence.view(confidence.size(0), -1, self.num_classes)
+
+                    location = self.regression_headers[i](x.to(torch.device("cuda:%d" %self.device[2])))
+                    location = location.permute(0, 2, 3, 1).contiguous()
+                    location = location.view(location.size(0), -1, 4)
+                except RuntimeError:
+                    confidence = self.classification_headers[i](x.to(torch.device("cuda:%d" %self.device[3])))
+                    confidence = confidence.permute(0, 2, 3, 1).contiguous()
+                    confidence = confidence.view(confidence.size(0), -1, self.num_classes)
+
+                    location = self.regression_headers[i](x.to(torch.device("cuda:%d" %self.device[3])))
+                    location = location.permute(0, 2, 3, 1).contiguous()
+                    location = location.view(location.size(0), -1, 4)
 
         return confidence, location
 
