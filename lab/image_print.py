@@ -6,10 +6,9 @@ import matplotlib.pyplot as plt
 import os
 import torch
 
-os.chdir("..")
 from ssd.vgg_ssd import create_vgg_ssd, create_vgg_ssd_predictor
 
-def image_print(net_type, model_path, label_path, data_dir, test_txt, how_many_images):
+def image_print(net_type, config_name, model_path, label_path, data_dir, test_txt, how_many_images):
     
     class_names = [name.strip() for name in open(label_path).readlines()]
     image_names = [name.strip() for name in open(test_txt).readlines()]
@@ -26,19 +25,18 @@ def image_print(net_type, model_path, label_path, data_dir, test_txt, how_many_i
     
     
     if net_type == 'vgg16-ssd':
-        net = create_vgg_ssd(len(class_names), is_test=True)
-        predictor = create_vgg_ssd_predictor(net, candidate_size=200)
+        net = create_vgg_ssd(len(class_names), config_name, is_test=True)
+        predictor = create_vgg_ssd_predictor(net, config_name, candidate_size=200)
     else:
         print("The net type is wrong.")
     
     try:
         # original saved file with DataParallel
-        state_dict = torch.load(model_path)
+        state_dict = torch.load(model_path, map_location=lambda storage, loc: storage)
         # create new OrderedDict that does not contain `module.`
         new_state_dict = OrderedDict()
         for k, v in state_dict.items():
             name = k[7:] # remove `module.`
-            #print(name)
             new_state_dict[name] = v
         # load params
         net.load_state_dict(new_state_dict)
