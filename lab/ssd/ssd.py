@@ -10,10 +10,11 @@ import sys
 #print(os.getcwd())
 os.chdir("utils")
 import box_utils
+from misc import Timer
 os.chdir("..")
 from collections import namedtuple, OrderedDict
 GraphPath = namedtuple("GraphPath", ['s0', 'name', 's1'])  #
-
+timer = Timer()
 
 
 class SSD(nn.Module):
@@ -50,6 +51,7 @@ class SSD(nn.Module):
             self.priors = config.priors.to(self.device0)
             
     def forward(self, x: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        timer.start()
         confidences = []
         locations = []
         start_layer_index = 0
@@ -113,8 +115,10 @@ class SSD(nn.Module):
                 locations, self.priors, self.config.center_variance, self.config.size_variance
             )
             boxes = box_utils.center_form_to_corner_form(boxes)
+            print("Time cost: ", timer.end())
             return confidences, boxes
         else:
+            print("Time cost: ", timer.end())
             return confidences, locations
         
         
