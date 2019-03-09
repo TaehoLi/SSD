@@ -67,10 +67,10 @@ def create_vgg_ssd(num_classes, config_name, device=None, is_test=False):
         Conv2d(in_channels=256, out_channels=4 * num_classes, kernel_size=3, padding=1), # TODO: change to kernel_size=1, padding=0?
     ])
     
-    if config_name == "vgg_ssd_config_VOC_300":
-        from ssd.config import vgg_ssd_config_VOC_300 as config
-    elif config_name == "vgg_ssd_config_COCO_512":
-        from ssd.config import vgg_ssd_config_COCO_512 as config
+    if config_name == "vgg_ssd_config_300":
+        from ssd.config import vgg_ssd_config_300 as config
+    elif config_name == "vgg_ssd_config_600":
+        from ssd.config import vgg_ssd_config_600 as config
     else:
         return print("There is no config file.")
     return SSD(num_classes, base_net, source_layer_indexes,
@@ -80,10 +80,10 @@ def create_vgg_ssd(num_classes, config_name, device=None, is_test=False):
 
 def create_vgg_ssd_predictor(net, config_name, candidate_size=200, nms_method=None, sigma=0.5, device=None):
     
-    if config_name == "vgg_ssd_config_VOC_300":
-        from ssd.config import vgg_ssd_config_VOC_300 as config
-    elif config_name == "vgg_ssd_config_COCO_512":
-        from ssd.config import vgg_ssd_config_COCO_512 as config
+    if config_name == "vgg_ssd_config_300":
+        from ssd.config import vgg_ssd_config_300 as config
+    elif config_name == "vgg_ssd_config_600":
+        from ssd.config import vgg_ssd_config_600 as config
     else:
         return print("There is no config file.")
     
