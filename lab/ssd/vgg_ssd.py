@@ -73,6 +73,8 @@ def create_vgg_ssd(num_classes, config_name, device=None, is_test=False):
         from ssd.config import vgg_ssd_config_512 as config
     elif config_name == "vgg_ssd_config_600":
         from ssd.config import vgg_ssd_config_600 as config
+    elif config_name == "vgg_ssd_config_1024":
+        from ssd.config import vgg_ssd_config_1024 as config
     else:
         return print("There is no config file.")
     
@@ -89,6 +91,8 @@ def create_vgg_ssd_predictor(net, config_name, candidate_size=200, nms_method=No
         from ssd.config import vgg_ssd_config_512 as config
     elif config_name == "vgg_ssd_config_600":
         from ssd.config import vgg_ssd_config_600 as config
+    elif config_name == "vgg_ssd_config_1024":
+        from ssd.config import vgg_ssd_config_1024 as config
     else:
         return print("There is no config file.")
     
