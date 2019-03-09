@@ -4,9 +4,7 @@ import torch
 import os
 os.chdir("utils")
 import box_utils
-from misc import Timer
 os.chdir("..")
-timer = Timer()
 
 class MultiboxLoss(nn.Module):
     def __init__(self, priors, iou_threshold, neg_pos_ratio,
@@ -33,7 +31,6 @@ class MultiboxLoss(nn.Module):
             labels (batch_size, num_priors): real labels of all the priors.
             boxes (batch_size, num_priors, 4): real boxes corresponding all the priors.
         """
-        timer.start()
         num_classes = confidence.size(2)
                 
         with torch.no_grad():
@@ -42,14 +39,16 @@ class MultiboxLoss(nn.Module):
             mask = box_utils.hard_negative_mining(loss, labels, self.neg_pos_ratio)
 
         confidence = confidence[mask, :]
+        
         classification_loss = F.cross_entropy(confidence.reshape(-1, num_classes), labels[mask], size_average=False) #reduction='sum'
+            
         pos_mask = labels > 0
 
         predicted_locations = predicted_locations[pos_mask, :].reshape(-1, 4)
         gt_locations = gt_locations[pos_mask, :].reshape(-1, 4)
         
         smooth_l1_loss = F.smooth_l1_loss(predicted_locations, gt_locations, size_average=False) #reduction='sum'
-        num_pos = gt_locations.size(0)
-        print("Time cost: ", timer.end())
-        return smooth_l1_loss/num_pos, classification_loss/num_pos
         
+        num_pos = gt_locations.size(0)
+        return smooth_l1_loss/num_pos, classification_loss/num_pos
+    
