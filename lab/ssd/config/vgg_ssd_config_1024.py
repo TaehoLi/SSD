@@ -13,19 +13,25 @@ center_variance = 0.1
 size_variance = 0.2
 
 specs = [
-    SSDSpec(128, 1, SSDBoxSizes(0, 86), [2]),
-    SSDSpec(64, 2, SSDBoxSizes(86, 172), [2, 3]),
-    SSDSpec(32, 4, SSDBoxSizes(172, 258), [2, 3]),
-    SSDSpec(16, 8, SSDBoxSizes(258, 344), [2, 3]),
-    SSDSpec(10, 16, SSDBoxSizes(344, 430), [2, 3]),
-    SSDSpec(9, 32, SSDBoxSizes(430, 516), [2]),
-    SSDSpec(6, 64, SSDBoxSizes(516, 602), [2, 3]),
-    SSDSpec(5, 128, SSDBoxSizes(602, 688), [2]),
-    SSDSpec(4, 256, SSDBoxSizes(688, 774), [2]),
-    SSDSpec(3, 512, SSDBoxSizes(774, 860), [2]),
-    SSDSpec(2, 1024, SSDBoxSizes(860, 946), [2]),
-    SSDSpec(1, 2048, SSDBoxSizes(946, 1032), [2])
+    #SSDSpec(128, 1, SSDBoxSizes(0, 86), [2]),
+    #SSDSpec(64, 2, SSDBoxSizes(86, 172), [2, 3]),
+    #SSDSpec(32, 4, SSDBoxSizes(172, 258), [2, 3]),
+    #SSDSpec(16, 8, SSDBoxSizes(258, 344), [2, 3]),
+    #SSDSpec(10, 16, SSDBoxSizes(344, 430), [2, 3]),
+    #SSDSpec(9, 32, SSDBoxSizes(430, 516), [2]),
+    #SSDSpec(6, 64, SSDBoxSizes(516, 602), [2, 3]),
+    #SSDSpec(5, 128, SSDBoxSizes(602, 688), [2]),
+    #SSDSpec(4, 256, SSDBoxSizes(688, 774), [2]),
+    #SSDSpec(3, 512, SSDBoxSizes(774, 860), [2]),
+    #SSDSpec(2, 1024, SSDBoxSizes(860, 946), [2]),
+    #SSDSpec(1, 2048, SSDBoxSizes(946, 1032), [2])
+    
+    SSDSpec(130, 8, SSDBoxSizes(10, 180), [2]),
+    SSDSpec(65, 32, SSDBoxSizes(180, 350), [2, 3]),
+    SSDSpec(30, 128, SSDBoxSizes(350, 520), [2, 3]),
+    SSDSpec(10, 256, SSDBoxSizes(520, 690), [2, 3]),
+    SSDSpec(7, 512, SSDBoxSizes(690, 860), [2]),
+    SSDSpec(1, 1024, SSDBoxSizes(860, 1030), [2, 3])
 ]
 
 priors = generate_ssd_priors(specs, image_size)
-
