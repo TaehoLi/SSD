@@ -27,6 +27,12 @@ def train(loader, net, criterion, optimizer, device, checkpoint_folder, debug_st
         
         regression_loss, classification_loss = criterion(confidence, locations, labels, boxes)  # TODO CHANGE BOXES
         loss = regression_loss + classification_loss
+        
+        for params in net.parameters(): # gradient clipping
+            torch.nn.utils.clip_grad_norm_(params, 1e+3, norm_type=2)
+            #torch.nn.utils.clip_grad_value_(params, 1e+05)
+            #print(params)
+            
         loss.backward()
         optimizer.step()
 
